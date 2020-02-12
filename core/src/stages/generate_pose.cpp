@@ -40,12 +40,15 @@
 #include <moveit/planning_scene/planning_scene.h>
 #include <rviz_marker_tools/marker_creation.h>
 
+#include <eigen_conversions/eigen_msg.h>
+
 namespace moveit {
 namespace task_constructor {
 namespace stages {
 
 GeneratePose::GeneratePose(const std::string& name) : MonitoringGenerator(name) {
 	auto& p = properties();
+  p.declare<double>("angle_delta", 0.0, "angular steps (rad)");
 	p.declare<geometry_msgs::PoseStamped>("pose", "target pose to pass on in spawned states");
 }
 
@@ -68,23 +71,56 @@ void GeneratePose::compute() {
 		return;
 
 	planning_scene::PlanningScenePtr scene = upstream_solutions_.pop()->end()->scene()->diff();
+
+  const auto& props = properties();
+  geometry_msgs::PoseStamped target_pose_msg;
 	geometry_msgs::PoseStamped target_pose = properties().get<geometry_msgs::PoseStamped>("pose");
 	if (target_pose.header.frame_id.empty())
 		target_pose.header.frame_id = scene->getPlanningFrame();
 	else if (!scene->knowsFrameTransform(target_pose.header.frame_id)) {
 		ROS_WARN_NAMED("GeneratePose", "Unknown frame: '%s'", target_pose.header.frame_id.c_str());
 		return;
-	}
+  }
 
-	InterfaceState state(scene);
-	state.properties().set("target_pose", target_pose);
+  target_pose_msg.header.frame_id = target_pose.header.frame_id;
+  Eigen::Isometry3d seed_target_pose;
+  tf::poseMsgToEigen(target_pose.pose, seed_target_pose);
 
-	SubTrajectory trajectory;
-	trajectory.setCost(0.0);
+  double angle_delta = props.get<double>("angle_delta");
+  if(angle_delta != 0.) {
+    //if the user has set angle_delta sample the target pose about the z-axis
+    double current_angle_ = 0.0;
+    while (current_angle_ < 2. * M_PI && current_angle_ > -2. * M_PI) {
+      // rotate object pose about z-axis
+      Eigen::Isometry3d target_pose(seed_target_pose * Eigen::AngleAxisd(current_angle_, Eigen::Vector3d::UnitZ()));
+      current_angle_ += angle_delta;
 
-	rviz_marker_tools::appendFrame(trajectory.markers(), target_pose, 0.1, "pose frame");
+      InterfaceState state(scene);
+      tf::poseEigenToMsg(target_pose, target_pose_msg.pose);
+      state.properties().set("target_pose", target_pose_msg);
 
-	spawn(std::move(state), std::move(trajectory));
+      SubTrajectory trajectory;
+      trajectory.setCost(0.0);
+      trajectory.setComment(std::to_string(current_angle_));
+
+      // add frame at target pose
+      rviz_marker_tools::appendFrame(trajectory.markers(), target_pose_msg, 0.1, "target frame");
+
+      spawn(std::move(state), std::move(trajectory));
+    }
+  }
+  else {
+    //else the user has only set the target pose
+    InterfaceState state(scene);
+    state.properties().set("target_pose", target_pose);
+
+    SubTrajectory trajectory;
+    trajectory.setCost(0.0);
+
+    rviz_marker_tools::appendFrame(trajectory.markers(), target_pose, 0.1, "pose frame");
+
+    spawn(std::move(state), std::move(trajectory));
+  }
 }
 }
 }

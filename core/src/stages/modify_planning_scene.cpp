@@ -80,6 +80,20 @@ void ModifyPlanningScene::attachObjects(planning_scene::PlanningScene& scene,
 		attach = !attach;
 	obj.object.operation =
 	    attach ? (int8_t)moveit_msgs::CollisionObject::ADD : (int8_t)moveit_msgs::CollisionObject::REMOVE;
+
+//  obj.object.header.frame_id = pair.first;
+//  shape_msgs::SolidPrimitive primitive;
+//  primitive.type = primitive.BOX;
+//  primitive.dimensions.resize(3);
+//  primitive.dimensions[0] = 0.05;
+//  primitive.dimensions[1] = 0.05;
+//  primitive.dimensions[2] = 0.05;
+//  obj.object.primitives.push_back(primitive);
+//  geometry_msgs::Pose p;
+//  p.position.z = 0.03;
+//  p.orientation.w = 1.0;
+//  obj.object.primitive_poses.push_back(p);
+
 	for (const std::string& name : pair.second.first) {
 		obj.object.id = name;
 		scene.processAttachedCollisionObjectMsg(obj);

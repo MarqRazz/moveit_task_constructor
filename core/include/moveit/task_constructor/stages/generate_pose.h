@@ -55,6 +55,7 @@ public:
 	bool canCompute() const override;
 	void compute() override;
 
+  void setAngleDelta(double delta) { setProperty("angle_delta", delta); }
 	void setPose(const geometry_msgs::PoseStamped pose) { setProperty("pose", std::move(pose)); }
 
 protected:
