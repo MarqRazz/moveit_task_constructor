@@ -83,13 +83,30 @@ enum InterfaceFlag
 	PROPAGATE_BACKWARDS = READS_END | WRITES_PREV_END,
 	GENERATE = WRITES_PREV_END | WRITES_NEXT_START,
 };
+
 typedef Flags<InterfaceFlag> InterfaceFlags;
+
+/** invert interface such that
+ * - new end can connect to old start
+ * - new start can connect to old end
+ */
+constexpr InterfaceFlags invert(InterfaceFlags f) {
+	InterfaceFlags inv;
+	if (f & READS_START)
+		inv = inv | WRITES_NEXT_START;
+	if (f & WRITES_PREV_END)
+		inv = inv | READS_END;
+	if (f & READS_END)
+		inv = inv | WRITES_PREV_END;
+	if (f & WRITES_NEXT_START)
+		inv = inv | READS_START;
+	return inv;
+};
 
 // some useful constants
 constexpr InterfaceFlags UNKNOWN;
 constexpr InterfaceFlags START_IF_MASK({ READS_START, WRITES_PREV_END });
 constexpr InterfaceFlags END_IF_MASK({ READS_END, WRITES_NEXT_START });
-constexpr InterfaceFlags PROPAGATE_BOTHWAYS({ PROPAGATE_FORWARDS, PROPAGATE_BACKWARDS });
 
 MOVEIT_CLASS_FORWARD(Interface)
 MOVEIT_CLASS_FORWARD(Stage)
@@ -209,7 +226,8 @@ public:
 	/// overload: const char* values are stored as std::string
 	inline void setProperty(const std::string& name, const char* value) { setProperty(name, std::string(value)); }
 	/// analyze source of error and report accordingly
-	void reportPropertyError(const Property::error& e);
+	[[noreturn]] void reportPropertyError(const Property::error& e);
+	double getTotalComputeTime() const;
 
 protected:
 	/// Stage can only be instantiated through derived classes
@@ -252,11 +270,8 @@ public:
 		AUTO = 0x00,  // auto-derive direction from context
 		FORWARD = 0x01,  // propagate forward only
 		BACKWARD = 0x02,  // propagate backward only
-		BOTHWAY = FORWARD | BACKWARD,  // propagate both ways
 	};
 	void restrictDirection(Direction dir);
-
-	void init(const moveit::core::RobotModelConstPtr& robot_model) override;
 
 	virtual void computeForward(const InterfaceState& from) = 0;
 	virtual void computeBackward(const InterfaceState& to) = 0;
@@ -367,6 +382,8 @@ protected:
 	}
 };
 
-const char* flowSymbol(moveit::task_constructor::InterfaceFlags f);
+/** Return (horizontal) flow symbol for start or end interface (specified by mask) */
+template <unsigned int mask>
+const char* flowSymbol(InterfaceFlags f);
 }
 }

@@ -86,12 +86,18 @@ void swap(StagePrivate*& lhs, StagePrivate*& rhs) {
 
 	// and redirect the parent pointers of children to new parents
 	auto& lhs_children = static_cast<ContainerBasePrivate*>(lhs)->children_;
-	for (auto it = lhs_children.begin(), end = lhs_children.end(); it != end; ++it)
-		(*it)->pimpl()->setHierarchy(static_cast<ContainerBase*>(lhs->me_), it);
+	for (auto it = lhs_children.begin(), end = lhs_children.end(); it != end; ++it) {
+		(*it)->pimpl()->unparent();
+		(*it)->pimpl()->setParent(static_cast<ContainerBase*>(lhs->me_));
+		(*it)->pimpl()->setParentPosition(it);
+	}
 
 	auto& rhs_children = static_cast<ContainerBasePrivate*>(rhs)->children_;
-	for (auto it = rhs_children.begin(), end = rhs_children.end(); it != end; ++it)
-		(*it)->pimpl()->setHierarchy(static_cast<ContainerBase*>(rhs->me_), it);
+	for (auto it = rhs_children.begin(), end = rhs_children.end(); it != end; ++it) {
+		(*it)->pimpl()->unparent();
+		(*it)->pimpl()->setParent(static_cast<ContainerBase*>(rhs->me_));
+		(*it)->pimpl()->setParentPosition(it);
+	}
 }
 
 const ContainerBase* TaskPrivate::stages() const {
@@ -188,11 +194,11 @@ void Task::loadRobotModel(const std::string& robot_description) {
 }
 
 void Task::add(Stage::pointer&& stage) {
-	if (!stage)
-		throw std::runtime_error("stage insertion failed: invalid stage pointer");
+	stages()->add(std::move(stage));
+}
 
-	if (!stages()->insert(std::move(stage)))
-		throw std::runtime_error(std::string("insertion failed for stage: ") + stage->name());
+bool Task::insert(Stage::pointer&& stage, int before) {
+	return stages()->insert(std::move(stage), before);
 }
 
 void Task::clear() {
@@ -229,7 +235,7 @@ Task::TaskCallbackList::const_iterator Task::addTaskCallback(TaskCallback&& cb) 
 	return --(impl->task_cbs_.cend());
 }
 
-void Task::erase(TaskCallbackList::const_iterator which) {
+void Task::eraseTaskCallback(TaskCallbackList::const_iterator which) {
 	pimpl()->task_cbs_.erase(which);
 }
 
@@ -255,9 +261,7 @@ void Task::init() {
 	// and *afterwards* initialize all children recursively
 	stages()->init(impl->robot_model_);
 	// task expects its wrapped child to push to both ends, this triggers interface resolution
-	stages()->pimpl()->pruneInterface(InterfaceFlags({ GENERATE }));
-	// and *finally* validate connectivity
-	stages()->pimpl()->validateConnectivity();
+	stages()->pimpl()->resolveInterface(InterfaceFlags({ GENERATE }));
 
 	// provide introspection instance to all stages
 	impl->setIntrospection(impl->introspection_.get());
@@ -278,7 +282,7 @@ bool Task::canCompute() const {
 }
 
 void Task::compute() {
-	stages()->compute();
+	stages()->pimpl()->runCompute();
 }
 
 bool Task::plan(size_t max_solutions) {
@@ -303,7 +307,7 @@ void Task::preempt() {
 	pimpl()->preempt_requested_ = true;
 }
 
-void Task::execute(const SolutionBase& s) {
+moveit_msgs::MoveItErrorCodes Task::execute(const SolutionBase& s) {
 	actionlib::SimpleActionClient<moveit_task_constructor_msgs::ExecuteTaskSolutionAction> ac("execute_task_solution");
 	ac.waitForServer();
 
@@ -311,6 +315,7 @@ void Task::execute(const SolutionBase& s) {
 	s.fillMessage(goal.solution, pimpl()->introspection_.get());
 	ac.sendGoal(goal);
 	ac.waitForResult();
+	return ac.getResult()->error_code;
 }
 
 void Task::publishAllSolutions(bool wait) {
@@ -343,7 +348,7 @@ void Task::setProperty(const std::string& name, const boost::any& value) {
 	wrapped()->setProperty(name, value);
 }
 
-std::string Task::id() const {
+const std::string& Task::id() const {
 	return pimpl()->id();
 }
 

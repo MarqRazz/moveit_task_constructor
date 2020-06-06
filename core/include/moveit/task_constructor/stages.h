@@ -1,7 +1,7 @@
 /*********************************************************************
  * Software License Agreement (BSD License)
  *
- *  Copyright (c) 2017, Bielefeld University
+ *  Copyright (c) 2020, Hamburg University
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -14,7 +14,7 @@
  *     copyright notice, this list of conditions and the following
  *     disclaimer in the documentation and/or other materials provided
  *     with the distribution.
- *   * Neither the name of Bielefeld University nor the names of its
+ *   * Neither the name of the copyright holder nor the names of its
  *     contributors may be used to endorse or promote products derived
  *     from this software without specific prior written permission.
  *
@@ -32,31 +32,22 @@
  *  POSSIBILITY OF SUCH DAMAGE.
  *********************************************************************/
 
-/* Authors: Luca Lach, Robert Haschke */
+/* Author: Michael 'v4hn' Goerner
+   Desc:   collective include of primitive stages
+*/
 
 #pragma once
 
-#include <moveit/task_constructor/storage.h>
-#include <moveit/robot_model/robot_model.h>
-#include <moveit/robot_trajectory/robot_trajectory.h>
-
-namespace moveit {
-namespace task_constructor {
-
-/** Create a new JointModelGroup comprising all joints of the given groups
- *
- *  Throws if there are any duplicate, active joints in the groups */
-moveit::core::JointModelGroup* merge(const std::vector<const moveit::core::JointModelGroup*>& groups);
-
-/** merge all sub trajectories into a single RobotTrajectory for parallel execution
- *
- * As the RobotTrajectory maintains a pointer to the underlying JointModelGroup
- * (to know about the involved joint names), a merged JointModelGroup needs to be passed
- * or created on the fly. This JMG needs to stay alive during the lifetime of the trajectory.
- * For now, only the trajectory path is considered. Timings, velocities, etc. are ignored.
- */
-robot_trajectory::RobotTrajectoryPtr
-merge(const std::vector<robot_trajectory::RobotTrajectoryConstPtr>& sub_trajectories,
-      const moveit::core::RobotState& base_state, moveit::core::JointModelGroup*& merged_group);
-}
-}
+#include "stages/compute_ik.h"
+#include "stages/connect.h"
+#include "stages/current_state.h"
+#include "stages/fix_collision_objects.h"
+#include "stages/fixed_cartesian_poses.h"
+#include "stages/fixed_state.h"
+#include "stages/generate_grasp_pose.h"
+#include "stages/generate_place_pose.h"
+#include "stages/generate_pose.h"
+#include "stages/modify_planning_scene.h"
+#include "stages/move_relative.h"
+#include "stages/move_to.h"
+#include "stages/predicate_filter.h"

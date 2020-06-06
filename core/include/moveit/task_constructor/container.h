@@ -54,11 +54,15 @@ public:
 	size_t numChildren() const;
 	Stage* findChild(const std::string& name) const;
 
-	typedef std::function<bool(const Stage&, int depth)> StageCallback;
+	/** Callback function type used by traverse functions
+	 *  The callback should return false if traversal should be stopped. */
+	typedef std::function<bool(const Stage&, unsigned int depth)> StageCallback;
 	/// traverse direct children of this container, calling the callback for each of them
 	bool traverseChildren(const StageCallback& processor) const;
 	/// traverse all children of this container recursively
 	bool traverseRecursively(const StageCallback& processor) const;
+
+	void add(Stage::pointer&& stage);
 
 	virtual bool insert(Stage::pointer&& stage, int before = -1);
 	virtual bool remove(int pos);
@@ -86,8 +90,6 @@ class SerialContainer : public ContainerBase
 public:
 	PRIVATE_CLASS(SerialContainer)
 	SerialContainer(const std::string& name = "serial container");
-
-	void init(const moveit::core::RobotModelConstPtr& robot_model) override;
 
 	bool canCompute() const override;
 	void compute() override;
@@ -125,8 +127,6 @@ class ParallelContainerBase : public ContainerBase
 public:
 	PRIVATE_CLASS(ParallelContainerBase)
 	ParallelContainerBase(const std::string& name = "parallel container");
-
-	void init(const moveit::core::RobotModelConstPtr& robot_model) override;
 
 protected:
 	ParallelContainerBase(ParallelContainerBasePrivate* impl);
