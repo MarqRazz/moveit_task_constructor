@@ -191,7 +191,7 @@ bool ExecuteTaskSolutionCapability::constructMotionPlan(const moveit_task_constr
 			scene_diff.robot_state.is_diff = true;  // silent empty JointState msg error
 
 			if (!moveit::core::isEmpty(scene_diff)) {
-				RCLCPP_DEBUG_STREAM(LOGGER, "apply effect of " << description);
+				RCLCPP_ERROR_STREAM(LOGGER, "apply effect of " << description);
 				return context_->planning_scene_monitor_->newPlanningSceneMessage(scene_diff);
 			}
 			return true;

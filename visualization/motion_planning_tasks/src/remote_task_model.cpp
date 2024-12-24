@@ -420,6 +420,7 @@ DisplaySolutionPtr RemoteTaskModel::getSolution(const QModelIndex& index) {
 	Q_ASSERT(index.isValid());
 
 	uint32_t id = index.sibling(index.row(), 0).data(Qt::UserRole).toUInt();
+	RCLCPP_ERROR(LOGGER, "Requesting from [%s] Solution ID: %i", get_solution_client_->get_service_name(), id);
 	auto it = id_to_solution_.find(id);
 	if (it == id_to_solution_.cend()) {
 		// TODO: try to assemble (and cache) the solution from known leaves

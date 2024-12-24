@@ -2,6 +2,7 @@
   ros__parameters:
     # Total planning attempts
     max_solutions: 10
+    execute: true
 
     # Planning group and link names
     arm_group_name: "panda_arm"
