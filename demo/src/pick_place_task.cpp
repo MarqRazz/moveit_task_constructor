@@ -251,16 +251,6 @@ bool PickPlaceTask::init(const rclcpp::Node::SharedPtr& node, const pick_place_t
 		}
 
 		/****************************************************
-  ---- *               Close Hand                      *
-		 ***************************************************/
-		{
-			auto stage = std::make_unique<stages::MoveTo>("close hand", sampling_planner);
-			stage->setGroup(params.hand_group_name);
-			stage->setGoal(params.hand_close_pose);
-			grasp->insert(std::move(stage));
-		}
-
-		/****************************************************
   .... *               Attach Object                      *
 		 ***************************************************/
 		{
@@ -337,24 +327,6 @@ bool PickPlaceTask::init(const rclcpp::Node::SharedPtr& node, const pick_place_t
 		place->properties().configureInitFrom(Stage::PARENT, { "eef", "hand", "group" });
 
 		/******************************************************
-  ---- *          Lower Object                              *
-		 *****************************************************/
-		{
-			auto stage = std::make_unique<stages::MoveRelative>("lower object", cartesian_planner);
-			stage->properties().set("marker_ns", "lower_object");
-			stage->properties().set("link", params.hand_frame);
-			stage->properties().configureInitFrom(Stage::PARENT, { "group" });
-			stage->setMinMaxDistance(.03, .13);
-
-			// Set downward direction
-			geometry_msgs::msg::Vector3Stamped vec;
-			vec.header.frame_id = params.world_frame;
-			vec.vector.z = -1.0;
-			stage->setDirection(vec);
-			place->insert(std::move(stage));
-		}
-
-		/******************************************************
   ---- *          Generate Place Pose                       *
 		 *****************************************************/
 		{
@@ -382,15 +354,21 @@ bool PickPlaceTask::init(const rclcpp::Node::SharedPtr& node, const pick_place_t
 		}
 
 		/******************************************************
-  ---- *          Open Hand                              *
+  ---- *          Detach Object                             *
 		 *****************************************************/
 		{
-			auto stage = std::make_unique<stages::MoveTo>("open hand", sampling_planner);
-			stage->setGroup(params.hand_group_name);
-			stage->setGoal(params.hand_open_pose);
+			auto stage = std::make_unique<stages::ModifyPlanningScene>("detach object");
+			stage->detachObject(params.object_name, params.hand_frame);
 			place->insert(std::move(stage));
 		}
-
+		/******************************************************
+  ---- *          Remove Object                             *
+		 *****************************************************/
+		{
+			auto stage = std::make_unique<stages::ModifyPlanningScene>("remove object");
+			stage->removeObject(params.object_name);
+			place->insert(std::move(stage));
+		}
 		/******************************************************
   ---- *          Forbid collision (hand, object)        *
 		 *****************************************************/
@@ -401,46 +379,8 @@ bool PickPlaceTask::init(const rclcpp::Node::SharedPtr& node, const pick_place_t
 			place->insert(std::move(stage));
 		}
 
-		/******************************************************
-  ---- *          Detach Object                             *
-		 *****************************************************/
-		{
-			auto stage = std::make_unique<stages::ModifyPlanningScene>("detach object");
-			stage->detachObject(params.object_name, params.hand_frame);
-			place->insert(std::move(stage));
-		}
-
-		/******************************************************
-  ---- *          Retreat Motion                            *
-		 *****************************************************/
-		{
-			auto stage = std::make_unique<stages::MoveRelative>("retreat after place", cartesian_planner);
-			stage->properties().configureInitFrom(Stage::PARENT, { "group" });
-			stage->setMinMaxDistance(.12, .25);
-			stage->setIKFrame(params.hand_frame);
-			stage->properties().set("marker_ns", "retreat");
-			geometry_msgs::msg::Vector3Stamped vec;
-			vec.header.frame_id = params.hand_frame;
-			vec.vector.z = -1.0;
-			stage->setDirection(vec);
-			place->insert(std::move(stage));
-		}
-
 		// Add place container to task
 		t.add(std::move(place));
-	}
-
-	/******************************************************
-	 *                                                    *
-	 *          Move to Home                              *
-	 *                                                    *
-	 *****************************************************/
-	{
-		auto stage = std::make_unique<stages::MoveTo>("move home", sampling_planner);
-		stage->properties().configureInitFrom(Stage::PARENT, { "group" });
-		stage->setGoal(params.arm_home_pose);
-		stage->restrictDirection(stages::MoveTo::FORWARD);
-		t.add(std::move(stage));
 	}
 
 	// prepare Task structure for planning
