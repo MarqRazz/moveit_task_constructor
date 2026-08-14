@@ -1,0 +1,666 @@
+{
+ "commit": "781c0de0",
+ "entries": {
+  "compute_ik.cpp:246": {
+   "file": "core/src/stages/compute_ik.cpp",
+   "lines": {
+    "246": "properties().performInitFrom(INTERFACE, s.start()->properties());"
+   }
+  },
+  "compute_ik.cpp:280-291": {
+   "file": "core/src/stages/compute_ik.cpp",
+   "lines": {
+    "280": "if (target_pose_msg.header.frame_id.empty())  // if not provided, assume planning frame",
+    "291": "target_pose = scene->getFrameTransform(target_pose_msg.header.frame_id) * target_pose;"
+   }
+  },
+  "compute_ik.cpp:318-321": {
+   "file": "core/src/stages/compute_ik.cpp",
+   "lines": {
+    "318": "link = scene->getCurrentState().getRigidlyConnectedParentLinkModel(ik_pose_msg.header.frame_id);",
+    "321": "target_pose = target_pose * ik_pose.inverse() * scene->getCurrentState().getFrameTransform(link->getName());"
+   }
+  },
+  "compute_ik.cpp:330-333": {
+   "file": "core/src/stages/compute_ik.cpp",
+   "lines": {
+    "330": "// frames at target pose and ik frame",
+    "333": "rviz_marker_tools::appendFrame(frame_markers, ik_pose_msg, 0.1, \"ik frame\");"
+   }
+  },
+  "compute_ik.cpp:351": {
+   "file": "core/src/stages/compute_ik.cpp",
+   "lines": {
+    "351": "solution.setComment(s.comment() + \" eef in collision: \" + listCollisionPairs(collisions.contacts));"
+   }
+  },
+  "compute_ik.cpp:436": {
+   "file": "core/src/stages/compute_ik.cpp",
+   "lines": {
+    "436": "solution.setCost(s.cost() + jmg->distance(ik_solutions[i].joint_positions.data(), compare_pose.data()));"
+   }
+  },
+  "compute_ik.cpp:438-469": {
+   "file": "core/src/stages/compute_ik.cpp",
+   "lines": {
+    "438": "solution.markAsFailure(\"Collision between \" + listCollisionPairs(ik_solutions[i].contacts));",
+    "469": "solution.setComment(s.comment() + \" no IK found\");"
+   }
+  },
+  "compute_ik.h:109": {
+   "file": "core/include/moveit/task_constructor/stages/compute_ik.h",
+   "lines": {
+    "109": "void setMaxIKSolutions(uint32_t n) { setProperty(\"max_ik_solutions\", n); }"
+   }
+  },
+  "compute_ik.h:68": {
+   "file": "core/include/moveit/task_constructor/stages/compute_ik.h",
+   "lines": {
+    "68": "class ComputeIK : public WrapperBase"
+   }
+  },
+  "compute_ik.h:84-93": {
+   "file": "core/include/moveit/task_constructor/stages/compute_ik.h",
+   "lines": {
+    "84": "/// setters for IK frame",
+    "93": "void setIKFrame(const std::string& link) { setIKFrame(Eigen::Isometry3d::Identity(), link); }"
+   }
+  },
+  "compute_ik.h:95-99": {
+   "file": "core/include/moveit/task_constructor/stages/compute_ik.h",
+   "lines": {
+    "95": "/** setters for target pose property",
+    "99": "*/"
+   }
+  },
+  "connect.h:56-63": {
+   "file": "core/include/moveit/task_constructor/stages/connect.h",
+   "lines": {
+    "56": "/** Connect arbitrary InterfaceStates by motion planning",
+    "63": "*/"
+   }
+  },
+  "connect.h:64": {
+   "file": "core/include/moveit/task_constructor/stages/connect.h",
+   "lines": {
+    "64": "class Connect : public Connecting"
+   }
+  },
+  "container.h:148": {
+   "file": "core/include/moveit/task_constructor/container.h",
+   "lines": {
+    "148": "class Alternatives : public ParallelContainerBase"
+   }
+  },
+  "container.h:166": {
+   "file": "core/include/moveit/task_constructor/container.h",
+   "lines": {
+    "166": "class Fallbacks : public ParallelContainerBase"
+   }
+  },
+  "container.h:183-184": {
+   "file": "core/include/moveit/task_constructor/container.h",
+   "lines": {
+    "183": "bool canCompute() const final { return false; }",
+    "184": "void compute() final {}"
+   }
+  },
+  "container.h:189": {
+   "file": "core/include/moveit/task_constructor/container.h",
+   "lines": {
+    "189": "class Merger : public ParallelContainerBase"
+   }
+  },
+  "container.h:48": {
+   "file": "core/include/moveit/task_constructor/container.h",
+   "lines": {
+    "48": "class ContainerBase : public Stage"
+   }
+  },
+  "container.h:55": {
+   "file": "core/include/moveit/task_constructor/container.h",
+   "lines": {
+    "55": "void setPruning(bool pruning) { setProperty(\"pruning\", pruning); }"
+   }
+  },
+  "container.h:55-56": {
+   "file": "core/include/moveit/task_constructor/container.h",
+   "lines": {
+    "55": "void setPruning(bool pruning) { setProperty(\"pruning\", pruning); }",
+    "56": "bool pruning() const { return properties().get<bool>(\"pruning\"); }"
+   }
+  },
+  "container.h:95": {
+   "file": "core/include/moveit/task_constructor/container.h",
+   "lines": {
+    "95": "class SerialContainer : public ContainerBase"
+   }
+  },
+  "core/include/moveit/task_constructor/stage.h:75-86": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "75": "enum InterfaceFlag : uint8_t",
+    "86": "};"
+   }
+  },
+  "core/include/moveit/task_constructor/stages/generate_pose.h:49": {
+   "file": "core/include/moveit/task_constructor/stages/generate_pose.h",
+   "lines": {
+    "49": "class GeneratePose : public MonitoringGenerator"
+   }
+  },
+  "core/include/moveit/task_constructor/storage.h:77-171": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "171": "};",
+    "77": "class InterfaceState"
+   }
+  },
+  "core/include/moveit/task_constructor/task.h:76,83-84": {
+   "file": "core/include/moveit/task_constructor/task.h",
+   "lines": {
+    "76": "class Task : protected WrapperBase",
+    "83": "Task(const std::string& ns = \"\", bool introspection = true,",
+    "84": "ContainerBase::pointer&& container = std::make_unique<SerialContainer>(\"task pipeline\"));"
+   }
+  },
+  "core/src/stages/connect.cpp:64": {
+   "file": "core/src/stages/connect.cpp",
+   "lines": {
+    "64": "setCostTerm(std::make_unique<cost::PathLength>());"
+   }
+  },
+  "core/src/stages/generate_pose.cpp:67-70": {
+   "file": "core/src/stages/generate_pose.cpp",
+   "lines": {
+    "67": "",
+    "70": "}"
+   }
+  },
+  "core/src/stages/move_relative.cpp:54": {
+   "file": "core/src/stages/move_relative.cpp",
+   "lines": {
+    "54": "setCostTerm(std::make_unique<cost::PathLength>());"
+   }
+  },
+  "core/src/stages/move_to.cpp:58": {
+   "file": "core/src/stages/move_to.cpp",
+   "lines": {
+    "58": "setCostTerm(std::make_unique<cost::PathLength>());"
+   }
+  },
+  "cost_terms.h:85-109": {
+   "file": "core/include/moveit/task_constructor/cost_terms.h",
+   "lines": {
+    "109": "};",
+    "85": "class LambdaCostTerm : public TrajectoryCostTerm"
+   }
+  },
+  "current_state.h:49": {
+   "file": "core/include/moveit/task_constructor/stages/current_state.h",
+   "lines": {
+    "49": "class CurrentState : public Generator"
+   }
+  },
+  "fix_collision_objects.h:50": {
+   "file": "core/include/moveit/task_constructor/stages/fix_collision_objects.h",
+   "lines": {
+    "50": "class FixCollisionObjects : public PropagatingEitherWay"
+   }
+  },
+  "fixed_cartesian_poses.h:49": {
+   "file": "core/include/moveit/task_constructor/stages/fixed_cartesian_poses.h",
+   "lines": {
+    "49": "class FixedCartesianPoses : public MonitoringGenerator"
+   }
+  },
+  "fixed_state.h:48": {
+   "file": "core/include/moveit/task_constructor/stages/fixed_state.h",
+   "lines": {
+    "48": "class FixedState : public Generator"
+   }
+  },
+  "generate_grasp_pose.cpp:166": {
+   "file": "core/src/stages/generate_grasp_pose.cpp",
+   "lines": {
+    "166": "target_pose_msg.header.frame_id = props.get<std::string>(\"object\");"
+   }
+  },
+  "generate_grasp_pose.cpp:170-177": {
+   "file": "core/src/stages/generate_grasp_pose.cpp",
+   "lines": {
+    "170": "while (current_angle < 2. * M_PI && current_angle > -2. * M_PI) {",
+    "177": "state.properties().set(\"target_pose\", target_pose_msg);"
+   }
+  },
+  "generate_grasp_pose.cpp:59,170-177": {
+   "file": "core/src/stages/generate_grasp_pose.cpp",
+   "lines": {
+    "170": "while (current_angle < 2. * M_PI && current_angle > -2. * M_PI) {",
+    "177": "state.properties().set(\"target_pose\", target_pose_msg);",
+    "59": "p.declare<Eigen::Vector3d>(\"rotation_axis\", Eigen::Vector3d::UnitZ(), \"rotate object pose about given axis\");"
+   }
+  },
+  "generate_grasp_pose.h:47": {
+   "file": "core/include/moveit/task_constructor/stages/generate_grasp_pose.h",
+   "lines": {
+    "47": "class GenerateGraspPose : public GeneratePose"
+   }
+  },
+  "generate_place_pose.cpp:106-130": {
+   "file": "core/src/stages/generate_place_pose.cpp",
+   "lines": {
+    "106": "Eigen::Isometry3d target_pose;",
+    "130": "state.properties().set(\"target_pose\", target_pose_msg);"
+   }
+  },
+  "generate_place_pose.h:51": {
+   "file": "core/include/moveit/task_constructor/stages/generate_place_pose.h",
+   "lines": {
+    "51": "class GeneratePlacePose : public GeneratePose"
+   }
+  },
+  "generate_pose.cpp:67-70": {
+   "file": "core/src/stages/generate_pose.cpp",
+   "lines": {
+    "67": "",
+    "70": "}"
+   }
+  },
+  "generate_pose.h:49": {
+   "file": "core/include/moveit/task_constructor/stages/generate_pose.h",
+   "lines": {
+    "49": "class GeneratePose : public MonitoringGenerator"
+   }
+  },
+  "generate_random_pose.h:49": {
+   "file": "core/include/moveit/task_constructor/stages/generate_random_pose.h",
+   "lines": {
+    "49": "class GenerateRandomPose : public GeneratePose"
+   }
+  },
+  "limit_solutions.h:47": {
+   "file": "core/include/moveit/task_constructor/stages/limit_solutions.h",
+   "lines": {
+    "47": "class LimitSolutions : public WrapperBase"
+   }
+  },
+  "modify_planning_scene.h:65": {
+   "file": "core/include/moveit/task_constructor/stages/modify_planning_scene.h",
+   "lines": {
+    "65": "class ModifyPlanningScene : public PropagatingEitherWay"
+   }
+  },
+  "move_relative.cpp:110-165": {
+   "file": "core/src/stages/move_relative.cpp",
+   "lines": {
+    "110": "static void visualizePlan(std::vector<visualization_msgs::msg::Marker>& markers, Interface::Direction dir, bool success,",
+    "165": "}"
+   }
+  },
+  "move_relative.cpp:229,261,288": {
+   "file": "core/src/stages/move_relative.cpp",
+   "lines": {
+    "229": "const Eigen::Isometry3d& frame_pose = scene->getFrameTransform(target.header.frame_id);",
+    "261": "linear = frame_pose.linear() * linear;",
+    "288": "linear = frame_pose.linear() * linear;"
+   }
+  },
+  "move_relative.cpp:261": {
+   "file": "core/src/stages/move_relative.cpp",
+   "lines": {
+    "261": "linear = frame_pose.linear() * linear;"
+   }
+  },
+  "move_relative.cpp:326,332": {
+   "file": "core/src/stages/move_relative.cpp",
+   "lines": {
+    "326": "snprintf(msg, sizeof(msg), \"min_distance not reached (%.3g < %.3g)\", distance, min_distance);",
+    "332": "solution.setComment(\"failed to move full distance\");"
+   }
+  },
+  "move_relative.h:57": {
+   "file": "core/include/moveit/task_constructor/stages/move_relative.h",
+   "lines": {
+    "57": "class MoveRelative : public PropagatingEitherWay"
+   }
+  },
+  "move_relative.h:67-75": {
+   "file": "core/include/moveit/task_constructor/stages/move_relative.h",
+   "lines": {
+    "67": "void setIKFrame(const geometry_msgs::msg::PoseStamped& pose) { setProperty(\"ik_frame\", pose); }",
+    "75": "void setIKFrame(const std::string& link) { setIKFrame(Eigen::Isometry3d::Identity(), link); }"
+   }
+  },
+  "move_relative.h:90-94": {
+   "file": "core/include/moveit/task_constructor/stages/move_relative.h",
+   "lines": {
+    "90": "void setDirection(const geometry_msgs::msg::TwistStamped& twist) { setProperty(\"direction\", twist); }",
+    "94": "void setDirection(const std::map<std::string, double>& joint_deltas) { setProperty(\"direction\", joint_deltas); }"
+   }
+  },
+  "move_to.h:56": {
+   "file": "core/include/moveit/task_constructor/stages/move_to.h",
+   "lines": {
+    "56": "class MoveTo : public PropagatingEitherWay"
+   }
+  },
+  "move_to.h:66-72": {
+   "file": "core/include/moveit/task_constructor/stages/move_to.h",
+   "lines": {
+    "66": "void setIKFrame(const geometry_msgs::msg::PoseStamped& pose) { setProperty(\"ik_frame\", pose); }",
+    "72": "void setIKFrame(const std::string& link) { setIKFrame(Eigen::Isometry3d::Identity(), link); }"
+   }
+  },
+  "noop.h:50": {
+   "file": "core/include/moveit/task_constructor/stages/noop.h",
+   "lines": {
+    "50": "class NoOp : public PropagatingEitherWay"
+   }
+  },
+  "passthrough.h:44-48": {
+   "file": "core/include/moveit/task_constructor/stages/passthrough.h",
+   "lines": {
+    "44": "/** Generic Wrapper that passes on a solution",
+    "48": "*/"
+   }
+  },
+  "passthrough.h:49": {
+   "file": "core/include/moveit/task_constructor/stages/passthrough.h",
+   "lines": {
+    "49": "class PassThrough : public WrapperBase"
+   }
+  },
+  "pick.h:92,109": {
+   "file": "core/include/moveit/task_constructor/stages/pick.h",
+   "lines": {
+    "109": "class Place : public PickPlaceBase",
+    "92": "class Pick : public PickPlaceBase"
+   }
+  },
+  "pick_place_task.cpp:128-132": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "128": "t.setProperty(\"group\", params.arm_group_name);",
+    "132": "t.setProperty(\"ik_frame\", params.hand_frame);"
+   }
+  },
+  "pick_place_task.cpp:193-194": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "193": "t.properties().exposeTo(grasp->properties(), { \"eef\", \"hand\", \"group\", \"ik_frame\" });",
+    "194": "grasp->properties().configureInitFrom(Stage::PARENT, { \"eef\", \"hand\", \"group\", \"ik_frame\" });"
+   }
+  },
+  "pick_place_task.cpp:207-211": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "207": "// Set hand forward direction",
+    "211": "stage->setDirection(vec);"
+   }
+  },
+  "pick_place_task.cpp:226,373": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "226": "stage->setMonitoredStage(initial_state_ptr);  // hook into successful initial-phase solutions",
+    "373": "stage->setMonitoredStage(pick_stage_ptr);  // hook into successful pick solutions"
+   }
+  },
+  "pick_place_task.cpp:233,378": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "233": "wrapper->setIKFrame(vectorToEigen(params.grasp_frame_transform), params.hand_frame);",
+    "378": "wrapper->setIKFrame(vectorToEigen(params.grasp_frame_transform), params.hand_frame);"
+   }
+  },
+  "pick_place_task.cpp:235-236": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "235": "wrapper->properties().configureInitFrom(Stage::INTERFACE,",
+    "236": "{ \"target_pose\" });  // inherit property from child solution"
+   }
+  },
+  "pick_place_task.cpp:245-306": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "245": "auto stage = std::make_unique<stages::ModifyPlanningScene>(\"allow collision (hand,object)\");",
+    "306": "}"
+   }
+  },
+  "pick_place_task.cpp:291-295,349-353": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "291": "// Set upward direction",
+    "295": "stage->setDirection(vec);",
+    "349": "// Set downward direction",
+    "353": "stage->setDirection(vec);"
+   }
+  },
+  "pick_place_task.cpp:376-380": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "376": "auto wrapper = std::make_unique<stages::ComputeIK>(\"place pose IK\", std::move(stage));",
+    "380": "wrapper->properties().configureInitFrom(Stage::INTERFACE, { \"target_pose\" });"
+   }
+  },
+  "pick_place_task.cpp:422-425": {
+   "file": "demo/src/pick_place_task.cpp",
+   "lines": {
+    "422": "geometry_msgs::msg::Vector3Stamped vec;",
+    "425": "stage->setDirection(vec);"
+   }
+  },
+  "predicate_filter.h:56": {
+   "file": "core/include/moveit/task_constructor/stages/predicate_filter.h",
+   "lines": {
+    "56": "class PredicateFilter : public WrapperBase"
+   }
+  },
+  "properties.h:267-277": {
+   "file": "core/include/moveit/task_constructor/properties.h",
+   "lines": {
+    "267": "template <typename T>",
+    "277": "}"
+   }
+  },
+  "properties.h:280-283": {
+   "file": "core/include/moveit/task_constructor/properties.h",
+   "lines": {
+    "280": "void exposeTo(PropertyMap& other, const std::set<std::string>& properties) const;",
+    "283": "void exposeTo(PropertyMap& other, const std::string& name, const std::string& other_name) const;"
+   }
+  },
+  "properties.h:301": {
+   "file": "core/include/moveit/task_constructor/properties.h",
+   "lines": {
+    "301": "void configureInitFrom(Property::SourceFlags source, const std::set<std::string>& properties = {});"
+   }
+  },
+  "solvers/cartesian_path.h:51": {
+   "file": "core/include/moveit/task_constructor/solvers/cartesian_path.h",
+   "lines": {
+    "51": "class CartesianPath : public PlannerInterface"
+   }
+  },
+  "solvers/joint_interpolation.h:54": {
+   "file": "core/include/moveit/task_constructor/solvers/joint_interpolation.h",
+   "lines": {
+    "54": "class JointInterpolationPlanner : public PlannerInterface"
+   }
+  },
+  "solvers/pipeline_planner.h:59": {
+   "file": "core/include/moveit/task_constructor/solvers/pipeline_planner.h",
+   "lines": {
+    "59": "class PipelinePlanner : public PlannerInterface"
+   }
+  },
+  "stage.h:117-139": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "117": "/// exception thrown by Stage::init()",
+    "139": "};"
+   }
+  },
+  "stage.h:158-164": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "158": "enum PropertyInitializerSource : uint8_t",
+    "164": "};"
+   }
+  },
+  "stage.h:214-219": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "214": "/// forwarding of properties between interface states",
+    "219": "void setForwardedProperties(const std::set<std::string>& names) { setProperty(\"forwarded_properties\", names); }"
+   }
+  },
+  "stage.h:230-235": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "230": "void setCostTerm(const CostTermConstPtr& term);",
+    "235": "}"
+   }
+  },
+  "stage.h:290": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "290": "class PropagatingEitherWay : public ComputeBase"
+   }
+  },
+  "stage.h:302": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "302": "void restrictDirection(Direction dir);"
+   }
+  },
+  "stage.h:334": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "334": "class PropagatingForward : public PropagatingEitherWay"
+   }
+  },
+  "stage.h:347": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "347": "class PropagatingBackward : public PropagatingEitherWay"
+   }
+  },
+  "stage.h:360": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "360": "class Generator : public ComputeBase"
+   }
+  },
+  "stage.h:368-374": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "368": "void spawn(InterfaceState&& from, InterfaceState&& to, SubTrajectory&& trajectory);",
+    "374": "}"
+   }
+  },
+  "stage.h:388-402": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "388": "class MonitoringGenerator : public Generator",
+    "402": "};"
+   }
+  },
+  "stage.h:405": {
+   "file": "core/include/moveit/task_constructor/stage.h",
+   "lines": {
+    "405": "class Connecting : public ComputeBase"
+   }
+  },
+  "storage.h:100": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "100": "Priority(unsigned int depth, double cost) : Priority(depth, cost, std::isfinite(cost) ? ENABLED : PRUNED) {}"
+   }
+  },
+  "storage.h:269-349": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "269": "class SolutionBase",
+    "349": "};"
+   }
+  },
+  "storage.h:303-306": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "303": "inline double cost() const { return cost_; }",
+    "306": "inline bool isFailure() const { return !std::isfinite(cost_); }"
+   }
+  },
+  "storage.h:331": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "331": "SolutionBase(Stage* creator = nullptr, double cost = 0.0, std::string comment = \"\", std::string planner_id = \"\")"
+   }
+  },
+  "storage.h:353": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "353": "class SubTrajectory : public SolutionBase"
+   }
+  },
+  "storage.h:386": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "386": "class SolutionSequence : public SolutionBase"
+   }
+  },
+  "storage.h:420": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "420": "class WrappedSolution : public SolutionBase"
+   }
+  },
+  "storage.h:84-89": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "84": "enum Status : uint8_t",
+    "89": "};"
+   }
+  },
+  "storage.h:96-119": {
+   "file": "core/include/moveit/task_constructor/storage.h",
+   "lines": {
+    "119": "};",
+    "96": "struct Priority : std::tuple<Status, unsigned int, double>"
+   }
+  },
+  "task.h:106-107": {
+   "file": "core/include/moveit/task_constructor/task.h",
+   "lines": {
+    "106": "void enableIntrospection(bool enable = true);",
+    "107": "Introspection& introspection();"
+   }
+  },
+  "task.h:130-133": {
+   "file": "core/include/moveit/task_constructor/task.h",
+   "lines": {
+    "130": "void init();",
+    "133": "moveit::core::MoveItErrorCode plan(size_t max_solutions = 0);"
+   }
+  },
+  "task.h:141": {
+   "file": "core/include/moveit/task_constructor/task.h",
+   "lines": {
+    "141": "void printState(std::ostream& os = std::cout) const;"
+   }
+  },
+  "task.h:144": {
+   "file": "core/include/moveit/task_constructor/task.h",
+   "lines": {
+    "144": "bool explainFailure(std::ostream& os = std::cout) const override;"
+   }
+  },
+  "task.h:147": {
+   "file": "core/include/moveit/task_constructor/task.h",
+   "lines": {
+    "147": "const ordered<SolutionBaseConstPtr>& solutions() const { return stages()->solutions(); }"
+   }
+  }
+ }
+}
